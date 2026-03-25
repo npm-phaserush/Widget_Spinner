@@ -1,9 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
-html, body{
-    margin: 0;
-    padding: 0;}
+
+html {
+  background: #000;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  max-width: 390px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Ensure Geologica utility works even if Tailwind fails to emit it */
 .font-geologica { font-family: 'Geologica', sans-serif; }
-    

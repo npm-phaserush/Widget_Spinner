@@ -1,40 +1,28 @@
-<div class="relative 
-         w-[70px] h-[60px]                   
-         sm:w-[90px] sm:h-[60px]            
-         md:w-[120px] md:h-[70px]  
-         lg:w-[140px] md:h-[90px]
-         xl:w-[95px] xl:h-[90px]         
-         bg-[rgba(65,65,65,0.685)] rounded-[12px] border-2 border-transparent 
-         overflow-hidden m-[2px] sm:m-[2px] 
-         transition-all duration-200 ease-in-out 
+<div class="relative
+         w-[70px] h-[60px]
+         bg-[rgba(65,65,65,0.685)] rounded-[12px] border-2 border-transparent
+         overflow-hidden m-[2px]
+         transition-all duration-200 ease-in-out
          shadow-none hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]">
 
-
-
-  <div class="absolute top-[35px] left-0 rotate-[-55deg] md:rotate-[-45deg] origin-top-left w-[100px] text-left ">
+  <div class="absolute top-[35px] left-0 rotate-[-55deg] origin-top-left w-[100px] text-left">
     <!-- Title  -->
       <img
         [src]="titleImage"
         [alt]="titleAlt || title"
-        class="title-img inline-block mt-[-10px] mb-2.5  h-10 
-        md:h-15 ml-[-5px]
-        sm:h-6 w-auto object-contain rotate-45" />
-    
+        class="title-img inline-block mt-[-10px] mb-2.5 h-10 ml-[-5px] w-auto object-contain rotate-45" />
+
     <!-- Subtitle -->
-    
       <img
         [src]="subtitleImage"
         [alt]="subtitleAlt || subtitle"
-        class="subtitle-img inline-block h-9  ml-[-35px] 
-        md:h-12
-        sm:h-6 w-auto object-contain rotate-45" />
-    
+        class="subtitle-img inline-block h-9 ml-[-35px] w-auto object-contain rotate-45" />
   </div>
 
   <!-- ==== IMAGE ==== -->
-  <div class="absolute xl:bottom-[-40px]  xl:right-[-25px] sm:bottom-[-45px]   sm:right-[-30px]  bottom-[-20px] right-[-15px]">
+  <div class="absolute bottom-[-20px] right-[-15px]">
     <img [src]="image" alt="Prize Image"
-      class="wheel-img w-[55px] h-[55px]   xl:w-[95px] xl:h-[90px] md:w-[100px] md:h-[100px]    rotate-[-45deg] opacity-95 transition-all duration-200 ease-out" />
+      class="wheel-img w-[55px] h-[55px] rotate-[-45deg] opacity-95 transition-all duration-200 ease-out" />
   </div>
 
 </div>

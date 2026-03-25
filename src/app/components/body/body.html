@@ -1,5 +1,5 @@
 <div
-  class="flex flex-row items-center justify-center w-full absolute  top-[70px] sm:top-[110px] md:top-[110px] lg:top-[150px]  xl:top-[100px]  2xl:top-[80px]  ">
+  class="flex flex-row items-center justify-center w-full absolute top-[70px]">
   <app-prizes-card
     [titleImage]="'assets/images/minor.png'"
     [subtitleImage]="'assets/images/prizes.png'"
@@ -25,18 +25,17 @@
 </div>
 
 <div
-  class=" flex flex-row items-center justify-center w-full absolute  top-[150px]  sm:top-[160px] md:top-[180px]  lg:top-[280px] xl:top-[210px]  2xl:top-[160px] ">
+  class="flex flex-row items-center justify-center w-full absolute top-[150px]">
 
   <img #rimImg [src]="getRimImage()" alt=""
-    class="w-[330px] h-[330px] sm:w-[550px] sm:h-[550px] md:h-[590px] md:w-[590px]   lg:w-[650px] lg:h-[650px] xl:w-[450px] xl:h-[450px] 2xl:h-[430px]  2xl:w-[430px] block rim-img"
+    class="w-[330px] h-[330px] block rim-img"
     [style.--rim-filter-a]="getRimFilterA()"
     [style.--rim-filter-b]="getRimFilterB()">
 
 
   <div class="absolute inset-0 flex justify-center items-center wheel-container m-0">
     <div #wheel class="relative rounded-full border-[2px] border-yellow-400 overflow-hidden origin-center wheel
-              w-[226px] xs:w-[320px] sm:w-[380px] md:w-[400px] xl:w-[300px] lg:w-[440px]
-        h-[226px] xs:h-[320px] sm:h-[380px] md:h-[400px] xl:h-[300px] lg:h-[440px]"
+              w-[226px] h-[226px]"
       [style.--rim-glow-0]="getRimGlow0()"
       [style.--rim-glow-1]="getRimGlow1()">
 
@@ -59,109 +58,83 @@
         </div>
       }
 
-
-
-
-
-
-
     </div>
     <!-- Rim Bulbs -->
     <div #rimBulbs
-      class="absolute top-1/2 left-1/2 w-[330px] h-[340px] xs:w-[350px] xs:h-[350px] sm:w-[375px] sm:h-[385px] md:w-[590px] md:h-[630px] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30 rim-bulbs"
+      class="absolute top-1/2 left-1/2 w-[330px] h-[340px] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30 rim-bulbs"
       [style.--bulb-base]="getBulbBaseColor()"
       [style.--bulb-glow-0]="getBulbGlow0()"
       [style.--bulb-glow-1]="getBulbGlow1()"
       [style.--bulb-background]="getBulbGradient()"
       [style.--bulb-border]="getBulbBorderColor()">
       <!-- Top bulb -->
-
-    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
-  shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9 
-  top-[10%] left-[47%]  md:top-[11%]  md:left-[46%] lg:top-[8%] xl:top-[10%] 2xl:top-[20%] 2xl:left-[46.5%]  ">
+    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
+  shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[10%] left-[47%]">
       </div>
       <!-- Top-right bulb -->
-    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[18%] left-[77%] sm:top-[20%] sm:left-[79%] md:top-[13%] md:left-[70%] lg:top-[12%] lg:left-[75%] 2xl:top-[20%] 2xl:left-[63.5%] ">
+    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[18%] left-[77%]">
       </div>
 
       <!-- Right bulb -->
-    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
-  shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[35%] left-[86%] sm:top-[36%] sm:left-[88%] md:top-[34%] md:left-[85%] lg:top-[30%] lg:left-[89%] 2xl:top-[35%] 2xl:left-[75.5%] ">
+    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
+  shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[35%] left-[86%]">
       </div>
 
       <!-- Bottom-right bulb -->
   <div
-    class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
-  shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9 
-  top-[53%] left-[78%] sm:top-[55%] sm:left-[80%] md:top-[51%] md:left-[75%] lg:top-[52%] lg:left-[80%] xl:top-[60%] xl:left-[84%] 2xl:top-[45%] 2xl:left-[68.5%] ">
+    class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
+  shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[53%] left-[78%]">
       </div>
 
       <!-- Bottom bulb -->
   <div
-    class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
-  shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[60%] left-[48.5%] sm:top-[71%] sm:left-[49%] md:top-[60%] md:left-[49.5%] lg:top-[70%] lg:left-[50%] xl:top-[76%] xl:left-[50%] 2xl:top-[45%] 2xl:left-[50.5%] ">
+    class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
+  shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[60%] left-[48.5%]">
       </div>
 
       <!-- Bottom-left bulb -->
-    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
+    <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
   shadow-bulb animate-bulbGlow bulb
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[43%] left-[16%]
-  sm:top-[45%] sm:left-[15%]
-  md:top-[39%] md:left-[16%]
-  lg:top-[40%] lg:left-[13%]
-  xl:top-[50%] xl:left-[12%]
-  2xl:top-[33%] 2xl:left-[26%]">
+  w-4 h-4
+  top-[43%] left-[16%]">
       </div>
       <!-- Left bulb -->
-      <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
-  shadow-bulb animate-bulbGlow bulb 
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[13%] left-[8%]
-  sm:top-[14%] sm:left-[7.5%]
-  md:top-[10%] md:left-[7.5%]
-  lg:top-[8%] lg:left-[4%]
-  xl:top-[17%] xl:left-[6%]
-   2xl:top-[9%] 2xl:left-[18%]">
+      <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
+  shadow-bulb animate-bulbGlow bulb
+  w-4 h-4
+  top-[13%] left-[8%]">
       </div>
       <!-- Top-left bulb -->
-      <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600 
+      <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
   shadow-bulb animate-bulbGlow bulb
-  w-4 h-4 sm:w-5 sm:h-5 md:w-9 md:h-9
-  top-[-15%] left-[16%]
-  sm:top-[-13%] sm:left-[15%]
-  md:top-[-22%] md:left-[20%]
-  lg:top-[-25%] lg:left-[16%]
-  xl:top-[-8%] xl:left-[12%]
-   2xl:top-[-17%] 2xl:left-[27%]">
+  w-4 h-4
+  top-[-15%] left-[16%]">
       </div>
 
     </div>
 
-
-
     <!-- Ribbon -->
     <div
-      class="absolute top-38 xs:top-25 sm:top-30 md:top-65 lg:top-65 xl:top-20 2xl:top-52 left-1/2 transform -translate-x-1/2 z-50 ribbon">
+      class="absolute top-38 left-1/2 transform -translate-x-1/2 z-50 ribbon">
       <img src="assets/images/ribbon.png" alt=""
-        class="w-[300px] h-[280px] xs:w-[300px] xs:h-[220px] sm:w-[320px] sm:h-[240px] md:w-[540px] md:h-[560px] lg:w-[660px] lg:h-[660px] xl:w-[300px] xl:h-[300px] 2xl:w-[350px] 2xl:h-[350px] ribbon-img">
+        class="w-[300px] h-[280px] ribbon-img">
     </div>
 
     <!-- Arrow Button -->
     <div class="absolute left-1/2 transform -translate-x-1/2 z-5 arrow">
-      <img #arrowBtn src="assets/images/arrw-btn.png" alt="" class="h-15 xs:h-14 sm:h-16 md:h-18 lg:h-19">
+      <img #arrowBtn src="assets/images/arrw-btn.png" alt="" class="h-15">
     </div>
   </div>
-
-
 
 
   <!-- Winner Banner -->
@@ -182,19 +155,16 @@
 </div>
 
 
-
-
 <!-- Spin Button -->
 <div
-  class="  flex flex-row items-center justify-center w-full absolute  top-[525px] sm:top-[110px] md:top-[930px] lg:top-[1050px]  xl:top-[100px]  2xl:top-[645px]">
+  class="flex flex-row items-center justify-center w-full absolute top-[525px]">
   <button
-    class="absolute flex-col items-center justify-center 
-                   w-35 xs:w-36 sm:w-40 md:w-70 lg:w-80   xl:w-50  
-                   h-13 xs:h-13 sm:h-14 md:h-25 lg:h-25   xl:h-15 
-                   bg-linear-to-r from-red-600 to-yellow-600 border-none rounded-lg text-white font-semibold shadow-lg cursor-pointer z-60 
+    class="absolute flex-col items-center justify-center
+                   w-35 h-13
+                   bg-linear-to-r from-red-600 to-yellow-600 border-none rounded-lg text-white font-semibold shadow-lg cursor-pointer z-60
                    disabled:bg-linear-to-r disabled:from-gray-600 disabled:to-gray-500 disabled:text-gray-300 disabled:cursor-not-allowed disabled:opacity-80 spin-btn"
     [disabled]="spinCount <= 0 || isSpinning" (click)="spinWheel()">
-    <div class="text-[10px] xs:text-xs sm:text-xs md:text-xl 2xl:text-[12px] tracking-wide font-geologica ">NO. OF FREE SPIN</div>
-    <div class="text-sm xs:text-base sm:text-base md:text-4xl font-geologica 2xl:text-[25px] font-bold ">{{ spinCount }} SPIN</div>
+    <div class="text-[10px] tracking-wide font-geologica">NO. OF FREE SPIN</div>
+    <div class="text-sm font-geologica font-bold">{{ spinCount }} SPIN</div>
   </button>
 </div>

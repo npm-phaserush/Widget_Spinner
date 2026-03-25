@@ -1,66 +1,64 @@
-<div class="absolute top-[570px] md:top-[1030px] lg:top-[1150px]  2xl:top-[695px]
-         flex items-center justify-center w-full gap-2 md:mr-4 sm:gap-3 ">
-  
+<div class="absolute top-[570px]
+         flex items-center justify-center w-full gap-2">
 
 
   <!--  Jackpot Box -->
   <div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]
-  rounded-lg sm:rounded-xl px-2 sm:px-4 py-2 sm:py-3 text-center
-  w-[40%]  h-[45px] sm:w-[30%] md:w-[320px] md:h-[85px]  xl::w-[320px] xl:h-[85px]  2xl:w-[200px] 2xl:h-[60px]
+  rounded-lg px-2 py-2 text-center
+  w-[40%] h-[45px]
   border border-white/10 flex-shrink-0">
 
-
     <p
-      class="text-[#ffcc33] font-semibold text-[8px]  md:text-[15px]  2xl:text-[12px] font-[Geologica] tracking-tight m-0">
+      class="text-[#ffcc33] font-semibold text-[8px] font-[Geologica] tracking-tight m-0">
       TOTAL SPIN JACKPOT
     </p>
-    <p class=" text-white text-xl   md:text-[40px]  2xl:text-[30px] font-semibold  font-[Geologica] m-0">
+    <p class="text-white text-xl font-semibold font-[Geologica] m-0">
       {{ getJackpotAmount() }}
     </p>
   </div>
 
   <!--  Winner Box -->
-  <div class="flex items-center justify-center gap-1 sm:gap-2 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]
-           rounded-lg sm:rounded-xl px-1 sm:px-4 py-1 sm:py-3 shadow-[0_0_15px_rgba(0,0,0,0.7)] border border-white/5
-           h-[55px] sm:h-[75px] md:h-[85px] overflow-hidden relative 
-           w-[40%] sm:w-[30%] md:w-[320px]  2xl:w-[150px] 2xl:h-[60px] flex-shrink-0">
+  <div class="flex items-center justify-center gap-1 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]
+           rounded-lg px-1 py-1 shadow-[0_0_15px_rgba(0,0,0,0.7)] border border-white/5
+           h-[55px] overflow-hidden relative
+           w-[40%] flex-shrink-0">
 
     <!-- Previous Winner -->
     <div class="flex flex-col items-center" id="winnerList">
       <div id="two"
-        class="flex items-center gap-1 sm:gap-2 opacity-50 absolute bottom-[53px]  md:bottom-[70px] 2xl:bottom-[51px] transition-opacity duration-500">
-         <img src="assets/images/svg9.png" alt="" class="w-[20px] h-[20px]  md:h-[40px] md:w-[40px]  2xl:h-[30px] 2xl:w-[30px]  ">
+        class="flex items-center gap-1 opacity-50 absolute bottom-[53px] transition-opacity duration-500">
+         <img src="assets/images/svg9.png" alt="" class="w-[20px] h-[20px]">
         <div>
-          <p class="text-white text-[13px]  md:text-[30px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">GamerX1234****
+          <p class="text-white text-[13px] font-semibold font-[Geologica] m-0">GamerX1234****
           </p>
-          <p class="text-[#ffcc33] text-[13px]  md:text-[25px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">won
+          <p class="text-[#ffcc33] text-[13px] font-semibold font-[Geologica] m-0">won
             ₱276,000.00</p>
         </div>
       </div>
 
       <!-- Current Winner -->
-      <div id="one" class="flex items-center gap-1 sm:gap-2">
+      <div id="one" class="flex items-center gap-1">
         <img src="assets/images/svg9.png" alt=""
-          class="w-[20px] h-[20px]  md:h-[40px] md:w-[40px]  2xl:h-[30px] 2xl:w-[30px]  ">
+          class="w-[20px] h-[20px]">
         <div>
-          <p class="text-white text-[13px]  md:text-[30px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">
+          <p class="text-white text-[13px] font-semibold font-[Geologica] m-0">
             GamerX1234****
           </p>
-          <p class="text-[#ffcc33] text-[13px]  md:text-[25px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">won
+          <p class="text-[#ffcc33] text-[13px] font-semibold font-[Geologica] m-0">won
             ₱276,000.00</p>
         </div>
       </div>
 
       <!-- Next Winner -->
       <div id="tree"
-        class="flex items-center gap-1 sm:gap-2 opacity-50 absolute top-[53px] md:top-[70px]  2xl:top-[51px]  transition-opacity duration-500">
+        class="flex items-center gap-1 opacity-50 absolute top-[53px] transition-opacity duration-500">
         <img src="assets/images/svg9.png" alt=""
-          class="w-[20px] h-[20px]  md:h-[40px] md:w-[40px]  2xl:h-[30px] 2xl:w-[30px]  ">
+          class="w-[20px] h-[20px]">
         <div>
-          <p class="text-white text-[13px]  md:text-[30px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">
+          <p class="text-white text-[13px] font-semibold font-[Geologica] m-0">
             GamerX1234****
           </p>
-          <p class="text-[#ffcc33] text-[13px]  md:text-[25px]  2xl:text-[15px] font-semibold font-[Geologica] m-0">won
+          <p class="text-[#ffcc33] text-[13px] font-semibold font-[Geologica] m-0">won
             ₱276,000.00</p>
         </div>
       </div>

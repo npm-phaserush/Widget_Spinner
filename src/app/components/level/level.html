@@ -1,24 +1,20 @@
-<div class="inline-block p-[2px] rounded-lg sm:rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.05]"
+<div class="inline-block p-[2px] rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.05]"
   [style.background]="getBorderGradient()"
   [style.boxShadow]="getGlowShadow()">
 
   <div class="flex flex-col items-center justify-center text-center
-       bg-black/85 rounded-md sm:rounded-lg 
-         w-[120px] h-[60px]                 
-         sm:w-[110px] sm:h-[80px]            
-         md:w-[15.5rem] md:h-[80px]  
-         lg:w-[200px] md:h-[90px]
-         xl:w-[170px] md:h-[70px]
+       bg-black/85 rounded-md
+         w-[120px] h-[60px]
        transition-all duration-200 ease-in-out
        shadow-none hover:shadow-[0_0_15px_rgba(255,255,255,0.2)]">
 
-    <p class="text-white/80 text-[10px] md:text-xl tracking-wide font-medium m-0 font-geologica">
+    <p class="text-white/80 text-[10px] tracking-wide font-medium m-0 font-geologica">
       REQUIRED VIP LEVEL
     </p>
 
     <div class="flex items-center justify-center gap-2 m-0">
-      <img src="assets/images/VBADGE.png" alt="Badge" class="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-5  lg:h-5 object-contain" />
-      <h2 class="text-white font-geologica font-bold text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl m-0">
+      <img src="assets/images/VBADGE.png" alt="Badge" class="w-3 h-3 object-contain" />
+      <h2 class="text-white font-geologica font-bold text-base m-0">
         {{ getVipNumber() }}
       </h2>
     </div>
