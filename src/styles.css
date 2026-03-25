@@ -19,3 +19,4 @@ body {
 
 /* Ensure Geologica utility works even if Tailwind fails to emit it */
 .font-geologica { font-family: 'Geologica', sans-serif; }
+  
