@@ -283,10 +283,14 @@ export class Body implements AfterViewInit {
   }
 
   launchConfetti() {
-    const end = Date.now() + 500;
+    const end = Date.now() + 400;
+    let skip = false;
     const frame = () => {
-      confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
-      confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+      skip = !skip;
+      if (!skip) {
+        confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 } });
+      }
       if (Date.now() < end) requestAnimationFrame(frame);
     };
     frame();
@@ -325,36 +329,40 @@ export class Body implements AfterViewInit {
       if (!banner || !textEl) return;
 
       textEl.style.whiteSpace = 'nowrap';
-
       textEl.style.fontSize = '';
+
+      // Batch all reads first to avoid layout thrashing
       const computed = window.getComputedStyle(textEl);
+      const bannerStyles = window.getComputedStyle(banner);
       let baseSize = parseFloat(computed.fontSize || '16');
       if (!isFinite(baseSize) || baseSize <= 0) baseSize = 16;
-
-      const bannerStyles = window.getComputedStyle(banner);
       const paddingLeft = parseFloat(bannerStyles.paddingLeft || '0');
       const paddingRight = parseFloat(bannerStyles.paddingRight || '0');
       const gap = parseFloat((bannerStyles as any).gap || bannerStyles.columnGap || '0');
-
       const imgEl = banner.querySelector('img') as HTMLElement | null;
       const imgWidth = imgEl ? imgEl.clientWidth : 0;
 
-      const maxBannerWidth = Math.floor(window.innerWidth * 0.9); 
-      
+      const maxBannerWidth = Math.floor(window.innerWidth * 0.9);
       let available = maxBannerWidth - paddingLeft - paddingRight - imgWidth - gap - 4;
       if (!isFinite(available) || available < 0) available = 0;
 
-      
-      const minSize = 10; 
-      let size = baseSize;
-      textEl.style.fontSize = size + 'px';
+      // Binary search instead of decrementing by 1px
+      const minSize = 10;
+      let lo = minSize;
+      let hi = baseSize;
+      textEl.style.fontSize = hi + 'px';
+      if (textEl.scrollWidth <= available) return;
 
-      
-      let safety = 100; 
-      while (textEl.scrollWidth > available && size > minSize && safety-- > 0) {
-        size -= 1;
-        textEl.style.fontSize = size + 'px';
+      while (hi - lo > 1) {
+        const mid = Math.floor((lo + hi) / 2);
+        textEl.style.fontSize = mid + 'px';
+        if (textEl.scrollWidth > available) {
+          hi = mid;
+        } else {
+          lo = mid;
+        }
       }
+      textEl.style.fontSize = lo + 'px';
     } catch {
     }
   }

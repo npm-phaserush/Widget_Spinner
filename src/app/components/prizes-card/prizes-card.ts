@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, AfterViewInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, ElementRef, AfterViewInit, OnDestroy, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { gsap } from 'gsap';
 
 @Component({
@@ -8,7 +8,7 @@ import { gsap } from 'gsap';
   templateUrl: './prizes-card.html',
   styleUrl: './prizes-card.css',
 })
-export class PrizesCard implements AfterViewInit, OnChanges {
+export class PrizesCard implements AfterViewInit, OnChanges, OnDestroy {
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() image: string = '';
@@ -26,6 +26,12 @@ export class PrizesCard implements AfterViewInit, OnChanges {
   private glowColor = '#FFD700';
   private effectiveVariant: 'minor' | 'major' | 'grand' | '' = '';
   private initialized = false;
+  private onHoverEnter = () => {
+    if (!this.active && this.effectiveVariant) this.picked.emit(this.effectiveVariant);
+  };
+  private onHoverLeave = () => {
+    if (!this.active) this.playLeaveAnimation();
+  };
 
   ngAfterViewInit() {
     this.cacheElements();
@@ -139,14 +145,19 @@ export class PrizesCard implements AfterViewInit, OnChanges {
   }
 
   private attachHoverHandlers() {
-    this.elements.card.addEventListener('mouseenter', () => {
-     
-      if (!this.active && this.effectiveVariant) this.picked.emit(this.effectiveVariant);
-    });
-    this.elements.card.addEventListener('mouseleave', () => {
+    this.elements.card.addEventListener('mouseenter', this.onHoverEnter);
+    this.elements.card.addEventListener('mouseleave', this.onHoverLeave);
+  }
 
-      if (!this.active) this.playLeaveAnimation();
-    });
+  ngOnDestroy() {
+    if (this.elements?.card) {
+      gsap.killTweensOf(this.elements.card);
+      this.elements.card.removeEventListener('mouseenter', this.onHoverEnter);
+      this.elements.card.removeEventListener('mouseleave', this.onHoverLeave);
+    }
+    if (this.elements?.image) gsap.killTweensOf(this.elements.image);
+    if (this.elements?.titleImg) gsap.killTweensOf(this.elements.titleImg);
+    if (this.elements?.subtitleImg) gsap.killTweensOf(this.elements.subtitleImg);
   }
 
   private applyInitialActiveState() {

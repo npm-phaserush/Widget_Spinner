@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Input } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { gsap } from 'gsap';
 
 @Component({
@@ -8,13 +8,26 @@ import { gsap } from 'gsap';
   templateUrl: './footer.html',
   styleUrls: ['./footer.css'],
 })
-export class Footer implements AfterViewInit {
+export class Footer implements AfterViewInit, OnDestroy {
   @Input() variant: 'minor' | 'major' | 'grand' = 'minor';
+
+  private tl: gsap.core.Timeline | null = null;
+  private listEl: Element | null = null;
+  private onMouseEnter = () => {
+    if (!this.listEl || !this.tl) return;
+    gsap.to(this.listEl, { y: '0%', duration: 0.5, ease: 'power1.out' });
+    this.tl.pause();
+  };
+  private onMouseLeave = () => {
+    if (!this.listEl || !this.tl) return;
+    gsap.set(this.listEl, { y: '0%' });
+    this.tl.restart();
+  };
 
   getJackpotAmount(): string {
     switch (this.variant) {
-      case 'major': return '₱198,765,432'; 
-      case 'grand': return '₱298,765,432'; 
+      case 'major': return '₱198,765,432';
+      case 'grand': return '₱298,765,432';
       case 'minor':
       default: return '₱98,765,432';
     }
@@ -30,27 +43,30 @@ export class Footer implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    const list = document.querySelector('#winnerList');
+    this.listEl = document.querySelector('#winnerList');
 
-    if (list) {
-      const tl = gsap.timeline({ repeat: -1, ease: 'power1.inOut', repeatDelay: 0 });
+    if (this.listEl) {
+      this.tl = gsap.timeline({ repeat: -1, ease: 'power1.inOut', repeatDelay: 0 });
 
-      //  motion cycle
-      tl.to(list, { y: '-90%', duration: 5 })
-        .to(list, { y: '0%', duration: 5 }) 
-        .to(list, { y: '90%', duration: 5 })
-        .to(list, { y: '0%', duration: 5 });
+      this.tl.to(this.listEl, { y: '-90%', duration: 5 })
+        .to(this.listEl, { y: '0%', duration: 5 })
+        .to(this.listEl, { y: '90%', duration: 5 })
+        .to(this.listEl, { y: '0%', duration: 5 });
 
-      
-      list.addEventListener('mouseenter', () => {
-        gsap.to(list, { y: '0%', duration: 0.5, ease: 'power1.out' });
-        tl.pause();
-      });
+      this.listEl.addEventListener('mouseenter', this.onMouseEnter);
+      this.listEl.addEventListener('mouseleave', this.onMouseLeave);
+    }
+  }
 
-      list.addEventListener('mouseleave', () => {
-        gsap.set(list, { y: '0%' });
-        tl.restart();
-      });
+  ngOnDestroy() {
+    if (this.tl) {
+      this.tl.kill();
+      this.tl = null;
+    }
+    if (this.listEl) {
+      this.listEl.removeEventListener('mouseenter', this.onMouseEnter);
+      this.listEl.removeEventListener('mouseleave', this.onMouseLeave);
+      this.listEl = null;
     }
   }
 }

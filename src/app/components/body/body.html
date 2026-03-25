@@ -6,21 +6,21 @@
     [variant]="'minor'"
     [active]="selectedVariant === 'minor'"
     (picked)="onVariantPicked($event)"
-    image="assets/images/small_roulette1.png"></app-prizes-card>
+    image="assets/images/small_roulette1.webp"></app-prizes-card>
   <app-prizes-card
     [titleImage]="'assets/images/major.png'"
     [subtitleImage]="'assets/images/prizes.png'"
     [variant]="'major'"
     [active]="selectedVariant === 'major'"
     (picked)="onVariantPicked($event)"
-    image="assets/images/small_roulette2.png"></app-prizes-card>
+    image="assets/images/small_roulette2.webp"></app-prizes-card>
   <app-prizes-card
     [titleImage]="'assets/images/grand.png'"
     [subtitleImage]="'assets/images/prizes.png'"
     [variant]="'grand'"
     [active]="selectedVariant === 'grand'"
     (picked)="onVariantPicked($event)"
-    image="assets/images/small_roulette3.png"></app-prizes-card>
+    image="assets/images/small_roulette3.webp"></app-prizes-card>
   <app-level [variant]="currentVariant"></app-level>
 </div>
 
@@ -126,13 +126,13 @@
     <!-- Ribbon -->
     <div
       class="absolute top-38 left-1/2 transform -translate-x-1/2 z-50 ribbon">
-      <img src="assets/images/ribbon.png" alt=""
-        class="w-[300px] h-[280px] ribbon-img">
+      <img src="assets/images/ribbon.webp" alt=""
+        decoding="async" class="w-[300px] h-[280px] ribbon-img">
     </div>
 
     <!-- Arrow Button -->
     <div class="absolute left-1/2 transform -translate-x-1/2 z-5 arrow">
-      <img #arrowBtn src="assets/images/arrw-btn.png" alt="" class="h-15">
+      <img #arrowBtn src="assets/images/arrw-btn.webp" alt="" class="h-15">
     </div>
   </div>
 
@@ -141,7 +141,7 @@
   <div #winnerBanner class=" winner-banner ">
     @if (winnerImage) {
       <img [src]="winnerImage" alt="Prize"
-        class="winner-img object-contain" />
+        loading="lazy" class="winner-img object-contain" />
     }
     <span #winnerTextRef class="text-center whitespace-nowrap">{{ winnerText }}</span>
     <button type="button"
