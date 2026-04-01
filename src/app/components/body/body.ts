@@ -1,24 +1,33 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { gsap } from 'gsap';
 import confetti from 'canvas-confetti';
+import { Subscription } from 'rxjs';
 import { PrizesCard } from '../prizes-card/prizes-card';
 import { Level } from '../level/level';
+import { SpinWheelService, SlicePrize } from '../../services/spin-wheel.service';
 
 @Component({
   selector: 'app-body',
   imports: [CommonModule, PrizesCard, Level],
   standalone: true,
   templateUrl: './body.html',
-  styleUrls: ['./body.css'], // 
+  styleUrls: ['./body.css'],
 })
-export class Body implements AfterViewInit {
+export class Body implements AfterViewInit, OnDestroy {
   @ViewChild('wheel') wheel!: ElementRef;
   @ViewChild('winnerBanner') winnerBanner!: ElementRef;
   @ViewChild('winnerTextRef') winnerTextEl!: ElementRef<HTMLSpanElement>;
   @ViewChild('rimImg') rimImg!: ElementRef<HTMLImageElement>;
   @ViewChild('rimBulbs') rimBulbs!: ElementRef<HTMLElement>;
   @ViewChild('arrowBtn') arrowBtn!: ElementRef<HTMLElement>;
+
+  private spinWheelService = inject(SpinWheelService);
+  private configSub: Subscription | null = null;
+
+  // Loaded from service — changes per variant
+  slices: SlicePrize[] = [];
+  isLoading = true;
 
   winnerText = '';
   winnerImage = '';
@@ -29,28 +38,119 @@ export class Body implements AfterViewInit {
   selectedVariant: 'minor' | 'major' | 'grand' = 'minor';
   @Output() variantChange = new EventEmitter<'minor' | 'major' | 'grand'>();
 
-  slices = [
-    { title: '500<br>CHIPS', image: 'assets/images/chips-red.png' },
-    { title: '100<br>CHIPS', image: 'assets/images/chips-yellow.png' },
-    { title: '500<br>CHIPS', image: 'assets/images/chips-red.png' },
-    { title: 'FREEBIE' },
-    { title: '1000<br>CHIPS', image: 'assets/images/chips-red.png' },
-    { title: '100<br>CHIPS', image: 'assets/images/chips-yellow.png' },
-    { title: '1000<br>CHIPS', image: 'assets/images/chips-red.png' },
-    { title: 'NMAX', image: 'assets/images/nmax.png' },
-  ];
+  // Pre-computed variant-dependent properties — updated only when variant changes
+  rimImage = 'assets/images/rim.png';
+  sliceBackgrounds: string[] = [];
+  bulbGradient = '';
+  bulbBaseColor = '';
+  bulbGlow0 = '';
+  bulbGlow1 = '';
+  bulbBorderColor = '';
+  rimGlow0 = '';
+  rimGlow1 = '';
+  rimFilterA = '';
+  rimFilterB = '';
+
+  // Recomputed after slices load (depend on slice count)
+  sliceTransforms: string[] = [];
+  labelPositions: string[] = [];
+
+  private variantTl: gsap.core.Timeline | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
-    // Optionally notify initial variant to parent
+    this.loadConfig(this.currentVariant);
     Promise.resolve().then(() => this.variantChange.emit(this.currentVariant));
     this.selectedVariant = this.currentVariant;
   }
 
+  ngOnDestroy() {
+    this.configSub?.unsubscribe();
+    if (this.variantTl) {
+      this.variantTl.kill();
+      this.variantTl = null;
+    }
+    gsap.killTweensOf(this.wheel?.nativeElement);
+    gsap.killTweensOf(this.winnerBanner?.nativeElement);
+  }
+
+  private loadConfig(variant: 'minor' | 'major' | 'grand') {
+    this.configSub?.unsubscribe();
+    this.isLoading = true;
+
+    this.configSub = this.spinWheelService.getWheelConfig(variant).subscribe(config => {
+      this.slices = config.slices;
+      this.recomputeSliceArrays();
+      this.updateVariantStyles();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  // Recompute transforms + positions whenever slice count changes
+  private recomputeSliceArrays() {
+    const total = this.slices.length;
+    const sliceAngle = 360 / total;
+
+    this.sliceTransforms = this.slices.map((_, i) =>
+      `rotate(${i * sliceAngle}deg) skewY(${90 - sliceAngle}deg)`
+    );
+    this.labelPositions = this.slices.map((_, i) => {
+      const angle = i * sliceAngle + sliceAngle / 2 - 90;
+      const rad = (angle * Math.PI) / 180;
+      const x = Math.cos(rad) * 80;
+      const y = Math.sin(rad) * 80;
+      return `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${angle + 90}deg)`;
+    });
+  }
+
+  // Called once per variant change — never on every CD cycle
+  private updateVariantStyles() {
+    const v = this.currentVariant;
+    const isMajor = v === 'major';
+    const isMinor = v === 'minor';
+
+    this.rimImage = isMajor
+      ? 'assets/images/rim-red.png'
+      : isMinor
+        ? 'assets/images/rim.png'
+        : 'assets/images/rim-blue.png';
+
+    this.sliceBackgrounds = this.slices.map((_, i) =>
+      this.computeSliceBackground(v, i)
+    );
+    this.bulbGradient    = this.computeSliceBackground(v);
+    this.bulbBaseColor   = isMajor ? '#ff2d2d' : isMinor ? '#ffb400' : '#2d9cff';
+    this.bulbGlow0       = isMajor ? 'rgba(255,60,60,0.6)'    : isMinor ? 'rgba(255,200,0,0.6)'    : 'rgba(100,180,255,0.6)';
+    this.bulbGlow1       = isMajor ? 'rgba(255,60,60,0.9)'    : isMinor ? 'rgba(255,200,0,0.9)'    : 'rgba(100,180,255,0.9)';
+    this.bulbBorderColor = isMajor ? '#ff2d2d'                : isMinor ? '#ffd700'                : '#2d9cff';
+    this.rimGlow0        = isMajor ? 'rgba(255,70,70,0.6)'    : isMinor ? 'rgba(255,220,60,0.6)'   : 'rgba(120,200,255,0.6)';
+    this.rimGlow1        = isMajor ? 'rgba(255,40,40,0.4)'    : isMinor ? 'rgba(255,180,0,0.4)'    : 'rgba(60,150,255,0.4)';
+    this.rimFilterA      = isMajor ? 'rgba(255, 50, 50, 0.8)' : isMinor ? 'rgba(255, 220, 50, 0.8)': 'rgba(80, 170, 255, 0.8)';
+    this.rimFilterB      = isMajor ? 'rgba(255, 0, 0, 0.6)'   : isMinor ? 'rgba(255, 160, 0, 0.6)' : 'rgba(0, 110, 200, 0.6)';
+  }
+
+  private computeSliceBackground(variant: string, index?: number): string {
+    const even = typeof index === 'number' && index % 2 === 0;
+    switch (variant) {
+      case 'major':
+        return even
+          ? 'radial-gradient(circle at center, #ff9999 0%, #e60000 50%, #993333 100%)'
+          : 'radial-gradient(circle at center, #ff4d4d 0%, #cc0000 50%, #660000 100%)';
+      case 'grand':
+        return even
+          ? 'radial-gradient(circle at center, #b3e6ff 0%, #66a3ff 50%, #334d80 100%)'
+          : 'radial-gradient(circle at center, #66ccff 0%, #0066cc 50%, #001f4d 100%)';
+      default:
+        return even
+          ? 'radial-gradient(circle at center, #ffd066 0%, #ffb84d 50%, #cc6600 100%)'
+          : 'radial-gradient(circle at center, #ffae00 0%, #ff9900 50%, #a84b00 100%)';
+    }
+  }
+
   onVariantPicked(variant: 'minor' | 'major' | 'grand') {
     if (!variant) return;
-   
     this.selectedVariant = variant;
     if (variant !== this.currentVariant) {
       this.animateVariantChange(variant);
@@ -58,29 +158,48 @@ export class Body implements AfterViewInit {
   }
 
   private animateVariantChange(next: 'minor' | 'major' | 'grand') {
-    const wheelEl = this.wheel?.nativeElement as HTMLElement;
-    const rimEl = this.rimImg?.nativeElement as HTMLElement;
-    const bulbsEl = this.rimBulbs?.nativeElement as HTMLElement;
-    const arrowEl = this.arrowBtn?.nativeElement as HTMLElement;
-    const slicesEl = wheelEl?.querySelectorAll('.slice') || [];
+    if (this.variantTl) {
+      this.variantTl.kill();
+      this.variantTl = null;
+    }
 
-    const tl = gsap.timeline();
-    tl.to(wheelEl, { rotation: '+=360', duration: 0.55, ease: 'power2.inOut' }, 0)
+    const wheelEl  = this.wheel?.nativeElement as HTMLElement;
+    const rimEl    = this.rimImg?.nativeElement as HTMLElement;
+    const bulbsEl  = this.rimBulbs?.nativeElement as HTMLElement;
+    const arrowEl  = this.arrowBtn?.nativeElement as HTMLElement;
+    const slicesEl = wheelEl?.querySelectorAll('.slice') || [];
+    const bulbEls  = Array.from(bulbsEl?.querySelectorAll('.bulb') || []) as HTMLElement[];
+
+    // Disable CSS bulbGlow keyframe so GSAP can fully control opacity
+    bulbEls.forEach(el => { el.style.animation = 'none'; });
+
+    this.variantTl = gsap.timeline({
+      onComplete: () => {
+        bulbEls.forEach(el => {
+          el.style.animation = '';
+          gsap.set(el, { clearProps: 'opacity,scale' });
+        });
+      }
+    });
+    this.variantTl
+      .to(wheelEl, { rotation: '+=360', duration: 0.55, ease: 'power2.inOut' }, 0)
       .to(rimEl, { opacity: 0, duration: 0.2, ease: 'power1.out' }, 0.05)
       .to(slicesEl, { opacity: 0.6, duration: 0.2, ease: 'power1.out' }, '<')
-      .to(bulbsEl, { opacity: 0.6, duration: 0.2, ease: 'power1.out' }, '<')
+      .to(bulbEls, { opacity: 0, duration: 0.2, ease: 'power1.out' }, '<')
       .to(arrowEl, { opacity: 0.6, duration: 0.2, ease: 'power1.out' }, '<')
       .call(() => {
         this.currentVariant = next;
+        // loadConfig sets new slices + updateVariantStyles + detectChanges
+        this.loadConfig(next);
         this.variantChange.emit(next);
       })
       .to(rimEl, { opacity: 1, duration: 0.25, ease: 'power1.in' }, '>-0.05')
       .to(slicesEl, { opacity: 1, duration: 0.25, ease: 'power1.in' }, '<')
-      .to(bulbsEl, { opacity: 1, duration: 0.25, ease: 'power1.in' }, '<')
+      .to(bulbEls, { opacity: 1, duration: 0.25, ease: 'power1.in' }, '<')
       .to(arrowEl, { opacity: 1, duration: 0.1, ease: 'power1.in' }, '<')
       .to(arrowEl, { scale: 1.2, y: -6, duration: 0.12, ease: 'back.out(2)' }, '>-0.05')
       .to(arrowEl, { scale: 1, y: 0, duration: 0.2, ease: 'back.inOut(2)' }, '>')
-      .to(bulbsEl?.querySelectorAll('.bulb') || [], {
+      .to(bulbEls, {
         scale: 1.15,
         duration: 0.12,
         yoyo: true,
@@ -90,157 +209,8 @@ export class Body implements AfterViewInit {
       }, '>-0.1');
   }
 
-
-
-  getRimImage(): string {
-    switch (this.currentVariant) {
-      case 'major':
-        return 'assets/images/rim-red.png';
-      case 'grand':
-        return 'assets/images/rim-blue.png';
-      case 'minor':
-      default:
-        return 'assets/images/rim.png';
-    }
-  }
-
-  getSliceBackground(index?: number): string {
-    switch (this.currentVariant) {
-      case 'major':
-        if (typeof index === 'number' && index % 2 === 0) {
-          return 'radial-gradient(circle at center, #ff9999 0%, #e60000 50%, #993333 100%)';
-        }
-        return 'radial-gradient(circle at center, #ff4d4d 0%, #cc0000 50%, #660000 100%)';
-      case 'grand':
-        if (typeof index === 'number' && index % 2 === 0) {
-          return 'radial-gradient(circle at center, #b3e6ff 0%, #66a3ff 50%, #334d80 100%)';
-        }
-        return 'radial-gradient(circle at center, #66ccff 0%, #0066cc 50%, #001f4d 100%)';
-      case 'minor':
-      default:
-        if (typeof index === 'number' && index % 2 === 0) {
-          return 'radial-gradient(circle at center, #ffd066 0%, #ffb84d 50%, #cc6600 100%)';
-        }
-        return 'radial-gradient(circle at center, #ffae00 0%, #ff9900 50%, #a84b00 100%)';
-    }
-  }
-
-
-  getBulbGradient(): string {
-    return this.getSliceBackground();
-  }
-
-  
-  getBulbBaseColor(): string {
-    switch (this.currentVariant) {
-      case 'major':
-        return '#ff2d2d'; //  red glow
-      case 'grand':
-        return '#2d9cff'; //  blue glow
-      case 'minor':
-      default:
-        return '#ffb400'; // yellow glow
-    }
-  }
-
-  getBulbGlow0(): string {
-    switch (this.currentVariant) {
-      case 'major':
-        return 'rgba(255,60,60,0.6)';
-      case 'grand':
-        return 'rgba(100,180,255,0.6)';
-      case 'minor':
-      default:
-        return 'rgba(255,200,0,0.6)';
-    }
-  }
-
-  getBulbGlow1(): string {
-    switch (this.currentVariant) {
-      case 'major':
-        return 'rgba(255,60,60,0.9)';
-      case 'grand':
-        return 'rgba(100,180,255,0.9)';
-      case 'minor':
-      default:
-        return 'rgba(255,200,0,0.9)';
-    }
-  }
-
-  
-  getBulbBorderColor(): string {
-    switch (this.currentVariant) {
-      case 'major':
-        return '#ff2d2d'; // red
-      case 'grand':
-        return '#2d9cff'; // blue
-      case 'minor':
-      default:
-        return '#ffd700'; // yellow
-    }
-  }
-
-  // Rim glow 
-  getRimGlow0(): string {
-    switch (this.currentVariant) {
-      case 'major': return 'rgba(255,70,70,0.6)';
-      case 'grand': return 'rgba(120,200,255,0.6)';
-      case 'minor':
-      default: return 'rgba(255,220,60,0.6)';
-    }
-  }
-
-  getRimGlow1(): string {
-    switch (this.currentVariant) {
-      case 'major': return 'rgba(255,40,40,0.4)';
-      case 'grand': return 'rgba(60,150,255,0.4)';
-      case 'minor':
-      default: return 'rgba(255,180,0,0.4)';
-    }
-  }
-
-  getRimFilterA(): string {
-    switch (this.currentVariant) {
-      case 'major': return 'rgba(255, 50, 50, 0.8)';
-      case 'grand': return 'rgba(80, 170, 255, 0.8)';
-      case 'minor':
-      default: return 'rgba(255, 220, 50, 0.8)';
-    }
-  }
-
-  getRimFilterB(): string {
-    switch (this.currentVariant) {
-      case 'major': return 'rgba(255, 0, 0, 0.6)';
-      case 'grand': return 'rgba(0, 110, 200, 0.6)';
-      case 'minor':
-      default: return 'rgba(255, 160, 0, 0.6)';
-    }
-  }
-
-  getLabelPosition(index: number): string {
-    const total = this.slices.length;
-    const sliceAngle = 360 / total;
-    const radius = 80; 
-    const baseOffset = -90; 
-
-    const angle = index * sliceAngle + sliceAngle / 2 + baseOffset;
-    const rad = (angle * Math.PI) / 180;
-
-    const x = Math.cos(rad) * radius;
-    const y = Math.sin(rad) * radius;
-    const rotation = angle + 90;
-
-    return `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${rotation}deg)`;
-  }
-
-  getSliceTransform(index: number): string {
-    const sliceAngle = 360 / this.slices.length;
-    const angle = index * sliceAngle;
-    return `rotate(${angle}deg) skewY(${90 - sliceAngle}deg)`;
-  }
-
   spinWheel() {
-    if (this.isSpinning || this.spinCount <= 0) return;
+    if (this.isSpinning || this.spinCount <= 0 || this.isLoading) return;
 
     this.spinCount--;
     this.isSpinning = true;
@@ -266,10 +236,10 @@ export class Body implements AfterViewInit {
         const angleFromTop = (360 - normalized) % 360;
         const winnerIndex = Math.floor(angleFromTop / sliceAngle) % totalSlices;
 
-  const prize = this.slices[winnerIndex];
-  const prizeText = (prize?.title || '').replace(/<br\s*\/?>/gi, ' ');
-  const prizeImg = prize?.image || '';
-  this.showWinningAnimation(prizeText || 'Unknown Prize', prizeImg);
+        const prize = this.slices[winnerIndex];
+        const prizeText = (prize?.title || '').replace(/<br\s*\/?>/gi, ' ');
+        const prizeImg = prize?.image || '';
+        this.showWinningAnimation(prizeText || 'Unknown Prize', prizeImg);
         this.launchConfetti();
         gsap.to(this.wheel.nativeElement, {
           rotation: finalRotation + 5,
@@ -296,7 +266,6 @@ export class Body implements AfterViewInit {
     frame();
   }
 
-  
   onContinue() {
     try {
       const banner: HTMLElement = this.winnerBanner?.nativeElement;
@@ -306,11 +275,11 @@ export class Body implements AfterViewInit {
     } catch {}
   }
 
- showWinningAnimation(prize: string, imgSrc: string) {
-   const sanitizedPrize = (prize || '').replace(/<br\s*\/?>/gi, ' ');
-   this.winnerText = `You won: ${sanitizedPrize}`;
-   this.winnerImage = imgSrc;
-   this.cdr.detectChanges();
+  showWinningAnimation(prize: string, imgSrc: string) {
+    const sanitizedPrize = (prize || '').replace(/<br\s*\/?>/gi, ' ');
+    this.winnerText = `You won: ${sanitizedPrize}`;
+    this.winnerImage = imgSrc;
+    this.cdr.detectChanges();
     this.fitWinnerText();
     const banner = this.winnerBanner.nativeElement;
     const img: HTMLImageElement | null = banner.querySelector('img');
@@ -331,7 +300,6 @@ export class Body implements AfterViewInit {
       textEl.style.whiteSpace = 'nowrap';
       textEl.style.fontSize = '';
 
-      // Batch all reads first to avoid layout thrashing
       const computed = window.getComputedStyle(textEl);
       const bannerStyles = window.getComputedStyle(banner);
       let baseSize = parseFloat(computed.fontSize || '16');
@@ -346,7 +314,6 @@ export class Body implements AfterViewInit {
       let available = maxBannerWidth - paddingLeft - paddingRight - imgWidth - gap - 4;
       if (!isFinite(available) || available < 0) available = 0;
 
-      // Binary search instead of decrementing by 1px
       const minSize = 10;
       let lo = minSize;
       let hi = baseSize;
@@ -356,14 +323,10 @@ export class Body implements AfterViewInit {
       while (hi - lo > 1) {
         const mid = Math.floor((lo + hi) / 2);
         textEl.style.fontSize = mid + 'px';
-        if (textEl.scrollWidth > available) {
-          hi = mid;
-        } else {
-          lo = mid;
-        }
+        if (textEl.scrollWidth > available) hi = mid;
+        else lo = mid;
       }
       textEl.style.fontSize = lo + 'px';
-    } catch {
-    }
+    } catch {}
   }
 }

@@ -1,6 +1,6 @@
 <div class="inline-block p-[2px] rounded-lg transition-all duration-300 ease-in-out hover:scale-[1.05]"
-  [style.background]="getBorderGradient()"
-  [style.boxShadow]="getGlowShadow()">
+  [style.background]="borderGradient"
+  [style.boxShadow]="glowShadow">
 
   <div class="flex flex-col items-center justify-center text-center
        bg-black/85 rounded-md
@@ -15,7 +15,7 @@
     <div class="flex items-center justify-center gap-2 m-0">
       <img src="assets/images/VBADGE.png" alt="Badge" class="w-3 h-3 object-contain" />
       <h2 class="text-white font-geologica font-bold text-base m-0">
-        {{ getVipNumber() }}
+        {{ vipNumber }}
       </h2>
     </div>
   </div>

@@ -27,24 +27,24 @@
 <div
   class="flex flex-row items-center justify-center w-full absolute top-[150px]">
 
-  <img #rimImg [src]="getRimImage()" alt=""
+  <img #rimImg [src]="rimImage" alt=""
     class="w-[330px] h-[330px] block rim-img"
-    [style.--rim-filter-a]="getRimFilterA()"
-    [style.--rim-filter-b]="getRimFilterB()">
+    [style.--rim-filter-a]="rimFilterA"
+    [style.--rim-filter-b]="rimFilterB">
 
 
   <div class="absolute inset-0 flex justify-center items-center wheel-container m-0">
     <div #wheel class="relative rounded-full border-[2px] border-yellow-400 overflow-hidden origin-center wheel
               w-[226px] h-[226px]"
-      [style.--rim-glow-0]="getRimGlow0()"
-      [style.--rim-glow-1]="getRimGlow1()">
+      [style.--rim-glow-0]="rimGlow0"
+      [style.--rim-glow-1]="rimGlow1">
 
       <!-- Wheel Slices -->
       @for (slice of slices; track $index; let i = $index) {
         <div
           class="absolute w-1/2 h-1/2 top-1/2 left-1/2 origin-top-left slice"
-          [style.transform]="getSliceTransform(i)"
-          [style.background]="getSliceBackground(i)">
+          [style.transform]="sliceTransforms[i]"
+          [style.background]="sliceBackgrounds[i]">
         </div>
       }
 
@@ -52,7 +52,7 @@
       @for (slice of slices; track $index; let i = $index) {
         <div
           class="absolute flex flex-col items-center justify-center text-center floating-label"
-          [style.transform]="getLabelPosition(i)">
+          [style.transform]="labelPositions[i]">
           <img [src]="slice.image" alt="" class="label-image" />
           <span class="label-text" [innerHTML]="slice.title"></span>
         </div>
@@ -62,11 +62,11 @@
     <!-- Rim Bulbs -->
     <div #rimBulbs
       class="absolute top-1/2 left-1/2 w-[330px] h-[340px] transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-30 rim-bulbs"
-      [style.--bulb-base]="getBulbBaseColor()"
-      [style.--bulb-glow-0]="getBulbGlow0()"
-      [style.--bulb-glow-1]="getBulbGlow1()"
-      [style.--bulb-background]="getBulbGradient()"
-      [style.--bulb-border]="getBulbBorderColor()">
+      [style.--bulb-base]="bulbBaseColor"
+      [style.--bulb-glow-0]="bulbGlow0"
+      [style.--bulb-glow-1]="bulbGlow1"
+      [style.--bulb-background]="bulbGradient"
+      [style.--bulb-border]="bulbBorderColor">
       <!-- Top bulb -->
     <div class="absolute rounded-full bg-gradient-radial from-yellow-100 via-yellow-400 to-yellow-600
   shadow-bulb animate-bulbGlow bulb

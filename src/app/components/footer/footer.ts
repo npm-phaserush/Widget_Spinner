@@ -1,5 +1,7 @@
-import { Component, AfterViewInit, OnDestroy, Input } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, Input, inject } from '@angular/core';
 import { gsap } from 'gsap';
+import { Subscription } from 'rxjs';
+import { SpinWheelService } from '../../services/spin-wheel.service';
 
 @Component({
   selector: 'app-footer',
@@ -8,8 +10,15 @@ import { gsap } from 'gsap';
   templateUrl: './footer.html',
   styleUrls: ['./footer.css'],
 })
-export class Footer implements AfterViewInit, OnDestroy {
+export class Footer implements AfterViewInit, OnChanges, OnDestroy {
   @Input() variant: 'minor' | 'major' | 'grand' = 'minor';
+
+  private spinWheelService = inject(SpinWheelService);
+  private configSub: Subscription | null = null;
+
+  // Loaded from service
+  jackpotAmount = '₱98,765,432';
+  jackpotGlow   = '0 0 15px rgba(255,204,51,0.2), 0 0 25px rgba(0,0,0,0.8)';
 
   private tl: gsap.core.Timeline | null = null;
   private listEl: Element | null = null;
@@ -24,21 +33,25 @@ export class Footer implements AfterViewInit, OnDestroy {
     this.tl.restart();
   };
 
-  getJackpotAmount(): string {
-    switch (this.variant) {
-      case 'major': return '₱198,765,432';
-      case 'grand': return '₱298,765,432';
-      case 'minor':
-      default: return '₱98,765,432';
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['variant']) {
+      this.loadConfig(this.variant);
     }
   }
 
-  getJackpotGlow(): string {
-    switch (this.variant) {
+  private loadConfig(variant: 'minor' | 'major' | 'grand') {
+    this.configSub?.unsubscribe();
+    this.configSub = this.spinWheelService.getWheelConfig(variant).subscribe(config => {
+      this.jackpotAmount = config.jackpotAmount;
+      this.jackpotGlow   = this.resolveGlow(variant);
+    });
+  }
+
+  private resolveGlow(variant: 'minor' | 'major' | 'grand'): string {
+    switch (variant) {
       case 'major': return '0 0 18px rgba(255,60,60,0.6), 0 0 30px rgba(255,0,0,0.4)';
       case 'grand': return '0 0 18px rgba(80,170,255,0.7), 0 0 30px rgba(0,110,200,0.5)';
-      case 'minor':
-      default: return '0 0 15px rgba(255,204,51,0.2), 0 0 25px rgba(0,0,0,0.8)';
+      default:      return '0 0 15px rgba(255,204,51,0.2), 0 0 25px rgba(0,0,0,0.8)';
     }
   }
 
@@ -59,6 +72,7 @@ export class Footer implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.configSub?.unsubscribe();
     if (this.tl) {
       this.tl.kill();
       this.tl = null;

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/USER/Documents/GitHub/Widget_Spinner/**)",
+      "Bash(find /c/Users/USER/Documents/GitHub/Widget_Spinner/dist/spin-wheel/browser/assets -type f -exec ls -lh {})"
+    ]
+  }
+}
